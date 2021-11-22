@@ -1,0 +1,28 @@
+body {
+  font-family: 'Helvetica Neue', sans-serif;
+  text-align: center;
+}
+
+img {
+  display: block;
+  margin: 50px auto;
+}
+
+.visualizer-container {
+  background: white;
+  padding: 14px;
+  overflow-x: auto;
+  border: 3px solid black;
+  margin-top: -3px;  /* so that the border doesn't overlap with the play buttons */
+  max-width: 800px;
+}
+
+svg rect.note {
+  fill: rgb(calc(var(--midi-velocity) * 1.2 + 100), 30, calc(255 - var(--midi-velocity)));
+}
+
+svg rect.note.active {
+  stroke: black;
+  stroke-width: 1.5;
+  stroke-opacity: 0.5;
+}
