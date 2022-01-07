@@ -42,7 +42,7 @@ const props = {
       hash: `0x${genRanHex(64)}`,
     };
     random = new Random(tokenData.hash);
-    automata = new Automata(32, 15, 1, random);
+    automata = new Automata(16, 15, 1, random);
     automata.generate();
     renderer = new Renderer(automata, context, random);
     music = new Music(automata, renderer);
@@ -74,9 +74,9 @@ const resize = () => {
   context.restore();
 };
 
-canvas.addEventListener('click', () => {
+/* canvas.addEventListener('click', () => {
   music.togglePlay();
-});
+}); */
 W.addEventListener('resize', resize);
 resize();
 draw();

@@ -1,3 +1,5 @@
+import * as tome from 'chromotome';
+
 // default 1000x1000 canvas
 const DEFAULT_SIZE = 1000;
 
@@ -16,12 +18,9 @@ class Renderer {
     this.random = random;
     this.activeNoteIdx = null;
 
-    this.palette = [
-      '#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5',
-      '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50',
-      '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
-      '#FF5722',
-    ];
+    const PALETTE_NAME = 'roygbiv-toned';
+    this.palette = tome.get(PALETTE_NAME).colors;
+    this.strokeColor = tome.get(PALETTE_NAME).stroke;
 
     const backgroundPalette = [
       '#C51F33',
@@ -43,10 +42,12 @@ class Renderer {
       '#E5E5E5',
     ];
     // this.backgroundColor = backgroundPalette[random.random_int(0, backgroundPalette.length - 1)];
-    this.backgroundColor = backgroundPalette[10];
+    // this.backgroundColor = backgroundPalette[10];
+    this.backgroundColor = tome.get(PALETTE_NAME).background;
   }
 
   setDim(width, height) {
+    this.context.fillStyle = this.palette[1];
     this.width = width;
     this.height = height;
   }
@@ -54,12 +55,12 @@ class Renderer {
   getScaleParam(width, height) {
     const DIM = Math.min(width, height);
     const M = DIM / DEFAULT_SIZE;
-    const CELL_SIZE = DEFAULT_SIZE / this.automata.config.size;
+    const CELL_SIZE_HEIGHT = DEFAULT_SIZE / this.automata.config.size;
 
     const scale = width / height <= 1 ? width : height;
 
     return {
-      CELL_SIZE,
+      CELL_SIZE_HEIGHT,
       M,
       scale,
       DIM,
@@ -68,31 +69,66 @@ class Renderer {
 
   render(width, height) {
     const {
-      CELL_SIZE, M, DIM, scale,
+      CELL_SIZE_HEIGHT, M, DIM, scale,
     } = this.getScaleParam(width, height);
-    const tx = (width - scale) * 0.5;
-    const ty = (height - scale) * 0.5;
+
+    this.context.translate(width / 2, height / 2);
 
     this.context.clearRect(0, 0, width, height);
-    this.context.fillStyle = 'white';
-    this.context.fillRect(0, 0, width, height);
+
     const radius = CELL_SIZE / 2.5;
+
+    const triangleTypeList = ['UL', 'LR', 'LL', 'UR'];
+
+    const drawLine = (fromX, fromY, toX, toY, color) => {
+      this.context.fillStyle = color;
+      this.context.beginPath();
+      this.context.moveTo(tx + fromX * M, ty + fromY * M);
+      this.context.lineTo(tx + toX * M, ty + toY * M);
+      this.context.stroke();
+    };
     this.automata.grid.forEach((row, r) => {
       row.forEach((val, c) => {
-        if (val > 0) {
-          const x = c * CELL_SIZE + radius;
-          const y = r * CELL_SIZE + radius;
-          this.context.fillStyle = this.palette[val];
+        if (val >= 0) {
+          const triangleType = r % 2 === 0 ? triangleTypeList[c % 4] : triangleTypeList[(c + 2) % 4];
+          const x = Math.floor(c / 2) * CELL_SIZE;
+          const y = r * CELL_SIZE * 0.5;
+          // fill
+          this.context.fillStyle = this.palette[val % this.palette.length];
           this.context.beginPath();
-          this.context.arc(
-            tx + x * M,
-            ty + y * M,
-            radius * M,
-            0,
-            2 * Math.PI,
-          );
+          this.context.moveTo(tx + x * M, ty + y * M);
+          if (triangleType === 'UL') {
+            this.context.lineTo(tx + x * M, ty + (y + CELL_SIZE * 0.5) * M);
+            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + y * M);
+          } else if (triangleType === 'UR') {
+            this.context.lineTo(tx + x * M, ty + (y + CELL_SIZE * 0.5) * M);
+            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + (y + CELL_SIZE * 0.5) * M);
+          } else if (triangleType === 'LL') {
+            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + (y + CELL_SIZE * 0.5) * M);
+            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + y * M);
+          } else if (triangleType === 'LR') {
+            this.context.moveTo(tx + x * M, ty + (y + CELL_SIZE * 0.5) * M);
+            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + (y + CELL_SIZE * 0.5) * M);
+            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + y * M);
+          }
+          this.context.closePath();
           this.context.fill();
-          // this.context.fillRect(x * M, y * M, CELL_SIZE * M + 1, CELL_SIZE * M + 1);
+        // this.context.fillRect(x * M, y * M, CELL_SIZE * M + 1, CELL_SIZE * M + 1);
+        }
+      });
+    });
+
+    this.automata.grid.forEach((row, r) => {
+      row.forEach((val, c) => {
+        const triangleType = r % 2 === 0 ? triangleTypeList[c % 4] : triangleTypeList[(c + 2) % 4];
+        const x = Math.floor(c / 2) * CELL_SIZE;
+        const y = r * CELL_SIZE * 0.5;
+        let prevColor = -1;
+
+        // draw top line
+        if (triangleType === 'UL' || triangleType === 'UR') {
+          prevColor = r === 0 ? -1 : this.automata.grid[r - 1][c];
+          drawLine(x, y, x + CELL_SIZE, y, prevColor === val ? val : 'black');
         }
       });
     });
