@@ -2,7 +2,7 @@ import * as Tone from 'tone';
 import scale from '../scales/minor';
 import { triad } from './chord';
 
-const synth = new Tone.PolySynth({ voice: Tone.Synth, maxPolyphony: 4 }).toMaster();
+const synth = new Tone.PolySynth({ voice: Tone.Synth, maxPolyphony: 4 }).toDestination();
 const time = 4;
 let currentProgression;
 

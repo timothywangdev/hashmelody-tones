@@ -1,4 +1,5 @@
-import * as tome from 'chromotome';
+import * as tome from "chromotome";
+import lerp from "../lerp";
 
 // default 1000x1000 canvas
 const DEFAULT_SIZE = 1000;
@@ -6,7 +7,7 @@ const DEFAULT_SIZE = 1000;
 const randomPaletteColor = (random) => {
   const n = Math.floor(random.random_dec() * 16777215);
   const hex = n.toString(16);
-  const paddedHex = hex.padStart(6, '0');
+  const paddedHex = hex.padStart(6, "0");
 
   return `#${paddedHex}`;
 };
@@ -18,32 +19,113 @@ class Renderer {
     this.random = random;
     this.activeNoteIdx = null;
 
-    const PALETTE_NAME = 'roygbiv-toned';
-    this.palette = tome.get(PALETTE_NAME).colors;
-    this.strokeColor = tome.get(PALETTE_NAME).stroke;
-
-    const backgroundPalette = [
-      '#C51F33',
-      '#F38316',
-      '#F9B807',
-      '#FBD46A',
-      '#2D5638',
-      '#418052',
-      '#58B271',
-      '#9ED78E',
-      '#1B325F',
-      '#2A4DA8',
-      '#2B94E1',
-      '#92C7D3',
-      '#E84A62',
-      '#ED7889',
-      '#F3A5B0',
-      '#0E0F0D',
-      '#E5E5E5',
+    const palettesNames = [
+      "retro",
+      "retro-washedout",
+      "roygbiv-warm",
+      "roygbiv-toned",
+      "present-correct",
+      "tundra3",
+      "tundra4",
+      "kov_06",
+      "kov_06b",
+      "empusa",
+      "delphi",
+      "mably",
+      "nowak",
+      "jupiter",
+      "hersche",
+      "cherfi",
+      "harvest",
+      "honey",
+      "jungle",
+      "giftcard",
+      "giftcard_sub",
+      "dale_paddle",
+      "exposito",
     ];
+    const idx = this.random.random_int(0, palettesNames.length-1);
+    this.palette = tome.get(palettesNames[idx]);
+    this.paletteColors = this.palette.colors;
+    this.strokeColor = this.palette.stroke;
+
     // this.backgroundColor = backgroundPalette[random.random_int(0, backgroundPalette.length - 1)];
     // this.backgroundColor = backgroundPalette[10];
-    this.backgroundColor = tome.get(PALETTE_NAME).background;
+    this.backgroundColor = this.palette.background;
+
+    // generate boxes
+    // y: relative to CELL_SIZE_HEIGHT, 0 <= y + h <= CELL_SIZE_HEIGHT
+    /* const boxList = [[
+      {
+        x: 0, y: 0, w: 10, h: 50,
+      },
+      {
+        x: 10, y: 0, w: 30, h: 20,
+      },
+      {
+        x: 60, y: 0, w: 50, h: 100,
+      }],
+    ];
+     */
+
+    const automataConfig = automata.config;
+    this.boxConfig = {
+      MIN_WIDTH: 1,
+      MAX_WIDIH: Math.floor(automataConfig.size / 10),
+      MIN_HEIGHT: 10,
+      MAX_HEIGHT: 100,
+      MAX_GAP: Math.floor(automataConfig.size / 10),
+      MAX_ROW: 12,
+    };
+    const boxList = [];
+    for (const [r, gridRow] of this.automata.grid.entries()) {
+      const row = {
+        startingTheta: 0,
+        omega: 0.0,
+        alpha: 0.0,
+        cumulativeArea: 0.0,
+        boxRow: [],
+      };
+      let lastEndingX = 0;
+      for (const [c, { val, len, begin }] of gridRow.entries()) {
+        if (val === 0) {
+          // empty
+          lastEndingX += this.boxConfig.MIN_WIDTH;
+        } else if (begin) {
+          const box = {
+            x: lastEndingX + this.random.random_num(0, this.boxConfig.MAX_GAP),
+            y: this.random.random_num(0, this.boxConfig.MIN_HEIGHT),
+            w: len,
+            h: this.random.random_num(
+              this.boxConfig.MIN_HEIGHT,
+              this.boxConfig.MAX_HEIGHT
+            ),
+            gapAfter:
+              c === gridRow.length - 1
+                ? this.random.random_num(0, this.boxConfig.MAX_GAP)
+                : 0,
+            color: this.paletteColors[val],
+            radiusDelta: 0,
+            radiusV: 0,
+            radiusA: 0,
+            shown: true,
+            idx: r * this.automata.config.size + c,
+          };
+          lastEndingX = box.x + box.w + box.gapAfter;
+          row.cumulativeArea += box.w * box.h;
+          row.boxRow.push(box);
+        }
+      }
+      row.omega = lerp(
+        0,
+        0.01,
+        row.cumulativeArea / (lastEndingX * this.boxConfig.MAX_HEIGHT)
+      );
+      boxList.push(row);
+    }
+    this.boxList = boxList;
+    this.currRow = 0;
+    console.log(boxList);
   }
 
   setDim(width, height) {
@@ -55,7 +137,9 @@ class Renderer {
   getScaleParam(width, height) {
     const DIM = Math.min(width, height);
     const M = DIM / DEFAULT_SIZE;
-    const CELL_SIZE_HEIGHT = DEFAULT_SIZE / this.automata.config.size;
+    const availableHeight = (0.8 * DEFAULT_SIZE) / 2.0;
+    const CELL_SIZE_HEIGHT = availableHeight / this.boxConfig.MAX_ROW;
+    const BASE_RADIUS = DEFAULT_SIZE / 2.0 - availableHeight;
 
     const scale = width / height <= 1 ? width : height;
 
@@ -64,99 +148,102 @@ class Renderer {
       M,
       scale,
       DIM,
+      BASE_RADIUS,
     };
   }
 
   render(width, height) {
-    const {
-      CELL_SIZE_HEIGHT, M, DIM, scale,
-    } = this.getScaleParam(width, height);
+    const { CELL_SIZE_HEIGHT, M, DIM, scale, BASE_RADIUS } = this.getScaleParam(
+      width,
+      height
+    );
+
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
+    this.context.clearRect(0, 0, width, height);
+
+    // set background
+    this.context.fillStyle = this.backgroundColor;
+    this.context.fillRect(0, 0, width, height);
 
     this.context.translate(width / 2, height / 2);
 
-    this.context.clearRect(0, 0, width, height);
-
-    const radius = CELL_SIZE / 2.5;
-
-    const triangleTypeList = ['UL', 'LR', 'LL', 'UR'];
-
-    const drawLine = (fromX, fromY, toX, toY, color) => {
+    const drawBox = (thetaLeft, thetaRight, radiusTop, radiusBottom, color) => {
+      const p1 = [
+        Math.cos(thetaLeft) * radiusTop,
+        Math.sin(thetaLeft) * radiusTop,
+      ];
+      const p2 = [
+        Math.cos(thetaLeft) * radiusBottom,
+        Math.sin(thetaLeft) * radiusBottom,
+      ];
+      const p3 = [
+        Math.cos(thetaRight) * radiusBottom,
+        Math.sin(thetaRight) * radiusBottom,
+      ];
+      const p4 = [
+        Math.cos(thetaRight) * radiusTop,
+        Math.sin(thetaRight) * radiusTop,
+      ];
       this.context.fillStyle = color;
       this.context.beginPath();
-      this.context.moveTo(tx + fromX * M, ty + fromY * M);
-      this.context.lineTo(tx + toX * M, ty + toY * M);
-      this.context.stroke();
+      this.context.moveTo(p1[0] * M, p1[1 * M]);
+      this.context.lineTo(p2[0] * M, p2[1] * M);
+      this.context.arc(0, 0, radiusBottom * M, thetaLeft, thetaRight);
+      this.context.lineTo(p4[0] * M, p4[1] * M);
+      this.context.arc(0, 0, radiusTop * M, thetaRight, thetaLeft, true);
+      this.context.closePath();
+      this.context.fill();
     };
-    this.automata.grid.forEach((row, r) => {
-      row.forEach((val, c) => {
-        if (val >= 0) {
-          const triangleType = r % 2 === 0 ? triangleTypeList[c % 4] : triangleTypeList[(c + 2) % 4];
-          const x = Math.floor(c / 2) * CELL_SIZE;
-          const y = r * CELL_SIZE * 0.5;
-          // fill
-          this.context.fillStyle = this.palette[val % this.palette.length];
-          this.context.beginPath();
-          this.context.moveTo(tx + x * M, ty + y * M);
-          if (triangleType === 'UL') {
-            this.context.lineTo(tx + x * M, ty + (y + CELL_SIZE * 0.5) * M);
-            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + y * M);
-          } else if (triangleType === 'UR') {
-            this.context.lineTo(tx + x * M, ty + (y + CELL_SIZE * 0.5) * M);
-            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + (y + CELL_SIZE * 0.5) * M);
-          } else if (triangleType === 'LL') {
-            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + (y + CELL_SIZE * 0.5) * M);
-            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + y * M);
-          } else if (triangleType === 'LR') {
-            this.context.moveTo(tx + x * M, ty + (y + CELL_SIZE * 0.5) * M);
-            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + (y + CELL_SIZE * 0.5) * M);
-            this.context.lineTo(tx + (x + CELL_SIZE) * M, ty + y * M);
-          }
-          this.context.closePath();
-          this.context.fill();
-        // this.context.fillRect(x * M, y * M, CELL_SIZE * M + 1, CELL_SIZE * M + 1);
-        }
-      });
-    });
 
-    this.automata.grid.forEach((row, r) => {
-      row.forEach((val, c) => {
-        const triangleType = r % 2 === 0 ? triangleTypeList[c % 4] : triangleTypeList[(c + 2) % 4];
-        const x = Math.floor(c / 2) * CELL_SIZE;
-        const y = r * CELL_SIZE * 0.5;
-        let prevColor = -1;
-
-        // draw top line
-        if (triangleType === 'UL' || triangleType === 'UR') {
-          prevColor = r === 0 ? -1 : this.automata.grid[r - 1][c];
-          drawLine(x, y, x + CELL_SIZE, y, prevColor === val ? val : 'black');
-        }
-      });
-    });
-
-    if (this.activeNoteIdx !== null && this.activeNoteIdx < this.automata.config.size * this.automata.config.size) {
-      const automataSize = this.automata.config.size;
-      const r = Math.floor(this.activeNoteIdx / automataSize);
-      const c = this.activeNoteIdx % automataSize;
-      const x = c * CELL_SIZE + radius;
-      const y = r * CELL_SIZE + radius;
-      const val = this.automata.getCell(this.activeNoteIdx);
-      if (val > 0) {
-        this.context.fillStyle = this.palette[val];
-        this.context.beginPath();
-        this.context.arc(
-          tx + x * M,
-          ty + y * M,
-          radius * M * 1.5,
-          0,
-          2 * Math.PI,
-        );
-        this.context.fill();
+    for (const [r, rowData] of this.boxList
+      .slice(this.currRow, this.currRow + this.boxConfig.MAX_ROW)
+      .entries()) {
+      let totalLen = 0;
+      for (const [c, box] of rowData.boxRow.entries()) {
+        totalLen = Math.max(totalLen, box.x + box.w + box.gapAfter);
       }
+
+      const currRadius =
+        (this.boxConfig.MAX_ROW - r - 1) * CELL_SIZE_HEIGHT + BASE_RADIUS * 0.6;
+      for (const [c, box] of rowData.boxRow.entries()) {
+        if (this.activeNoteIdx === box.idx) {
+          // make it fly away
+          if (box.radiusV === 0) {
+            box.radiusV = 5;
+          }
+        }
+        box.radiusDelta += box.radiusV;
+
+        const thetaLeft = (Math.PI * 2 * box.x) / totalLen;
+        const thetaRight = (Math.PI * 2 * (box.x + box.w)) / totalLen;
+
+        const radiusTop =
+          currRadius +
+          lerp(
+            0,
+            CELL_SIZE_HEIGHT,
+            ((box.y + box.h) * 1.0) / this.boxConfig.MAX_HEIGHT
+          );
+        const radiusBottom =
+          currRadius +
+          lerp(0, CELL_SIZE_HEIGHT, (box.y * 1.0) / this.boxConfig.MAX_HEIGHT);
+
+        drawBox(
+          rowData.startingTheta + thetaLeft,
+          rowData.startingTheta + thetaRight,
+          1.5 * box.radiusDelta + radiusTop,
+          box.radiusDelta + radiusBottom,
+          box.color
+        );
+      }
+
+      rowData.startingTheta += rowData.omega;
     }
   }
 
   setActiveNode(idx) {
     this.activeNoteIdx = idx;
+    //console.log(idx);
   }
 }
 

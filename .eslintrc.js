@@ -6,4 +6,8 @@ module.exports = {
   },
   extends: ['airbnb'],
   parser: 'babel-eslint',
+  rules: {
+    'no-restricted-syntax': 0,
+    'max-classes-per-file': ['ignoreExpressions', true],
+  },
 };
