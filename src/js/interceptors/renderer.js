@@ -92,13 +92,14 @@ class Renderer {
           // empty
           lastEndingX += this.boxConfig.MIN_WIDTH;
         } else if (begin) {
+          const y = this.random.random_num(0, this.boxConfig.MIN_HEIGHT)
           const box = {
             x: lastEndingX + this.random.random_num(0, this.boxConfig.MAX_GAP),
-            y: this.random.random_num(0, this.boxConfig.MIN_HEIGHT),
+            y,
             w: len,
             h: this.random.random_num(
               this.boxConfig.MIN_HEIGHT,
-              this.boxConfig.MAX_HEIGHT
+              this.boxConfig.MAX_HEIGHT - y
             ),
             gapAfter:
               c === gridRow.length - 1

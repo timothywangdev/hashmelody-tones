@@ -3,7 +3,7 @@ import Instrument from './instrument';
 
 export class SimpleSine extends Instrument {
   constructor() {
-    super(new Tone.PolySynth(Tone.Synth), 5, true);
+    super(new Tone.PolySynth(Tone.Synth), 0);
     this.synth.set({
       oscillator: {
         type: 'fatsine',
@@ -16,7 +16,14 @@ export class SimpleSine extends Instrument {
       },
       portamento: 0.2,
     });
-    //this.synth.send('reverb', -12);
+    const filter = new Tone.Filter(250, "lowpass").toDestination();;
+
+    const lfo = new Tone.LFO("4m", 550, 800);
+    lfo.start();
+    lfo.connect(filter.frequency);
+
+    const reverb = new Tone.Freeverb()
+    this.synth.chain(reverb, filter);
   }
 }
 
@@ -39,7 +46,6 @@ export class SoftSquareFm extends Instrument {
 
     const reverb = new Tone.Freeverb().toDestination();
     const filter = new Tone.Filter(400, 'lowpass');
-    //this.synth.send('reverb', -12);
     this.synth.chain(filter, reverb);
   }
 }

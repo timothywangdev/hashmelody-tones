@@ -45,7 +45,7 @@ class Song {
       root: scales.getRandomRootNote(),
       type: keyType.intervals,
       typeName: keyType.type,
-      chordOctave: utils.randomIntBetween(2, 3),
+      chordOctave: utils.randomIntBetween(3,3),
     };
 
     const progressionIntervals = utils.randomFromArray(
@@ -153,14 +153,14 @@ class Song {
       true
     )
 
-   parts.addDrums(
-      "0:0:0",
-      undefined,
-      this.drumInstruments.HiHat,
-      hihatRythym,
-      0.9,
-      true
-    );
+  //  parts.addDrums(
+  //     "0:0:0",
+  //     undefined,
+  //     this.drumInstruments.HiHat,
+  //     hihatRythym,
+  //     0.9,
+  //     true
+  //   );
 
     parts.addDrums(
       "0:0:0",
@@ -171,15 +171,15 @@ class Song {
       true
     );
 
-    this.drumInstruments.OpenHat.setFrequency(Tone.Frequency(songKey.root + "3").toFrequency())
-    parts.addDrums(
-      "0:0:0",
-      undefined,
-      this.drumInstruments.OpenHat,
-      openHatRythym,
-      0.9,
-      true
-    );
+    // this.drumInstruments.OpenHat.setFrequency(Tone.Frequency(songKey.root + "3").toFrequency())
+    // parts.addDrums(
+    //   "0:0:0",
+    //   undefined,
+    //   this.drumInstruments.OpenHat,
+    //   openHatRythym,
+    //   0.9,
+    //   true
+    // );
 
     parts.addChordProgression(
       "0:0:0", chordProgression, chordInstrument, `${chordProgressionBars}m`, `${chordProgressionBars}m`, true

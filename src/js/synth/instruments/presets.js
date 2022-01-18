@@ -74,7 +74,7 @@ export class AM_Tiny extends Instrument {
 
 export class FM_ElectricCello extends Instrument {
   constructor() {
-    super(new Tone.PolySynth(Tone.FMSynth), 20, true);
+    super(new Tone.PolySynth(Tone.FMSynth), 10);
     this.synth.set({
       harmonicity: 3.01,
       modulationIndex: 14,
@@ -97,9 +97,8 @@ export class FM_ElectricCello extends Instrument {
         release: 0.1,
       },
     });
-    //this.synth.volume.value = 10;
-
-    //this.synth.send('reverb', -12);
+    const reverb = new Tone.Freeverb().toDestination();
+    this.synth.chain(reverb);
   }
 }
 
@@ -129,9 +128,10 @@ export class Kalimba extends Instrument {
           release: 0.2,
         },
       }),
-      18,
-      true
+      10,
     );
+    const reverb = new Tone.Freeverb().toDestination();
+    this.synth.chain(reverb);
   }
 }
 
@@ -166,7 +166,6 @@ export class BassGuitar extends Instrument {
         },
       }),
       2,
-      //true
     );
     const freeverb = new Tone.Freeverb().toDestination()
     this.synth.connect(freeverb)
@@ -201,74 +200,9 @@ export class Bassy extends Instrument {
           octaves: 3.4,
         },
       }),
-      13,
+      16,
       true
     );
-  }
-}
-export class Coolguy extends Instrument {
-  constructor() {
-    super(new Tone.PolySynth(Tone.MonoSynth), 24, true);
-    this.synth.set({
-      oscillator: {
-        type: "pwm",
-        modulationFrequency: 1,
-      },
-      filter: {
-        Q: 6,
-        rolloff: -24,
-      },
-      envelope: {
-        attack: 0.025,
-        decay: 0.3,
-        sustain: 0.9,
-        release: 2,
-      },
-      filterEnvelope: {
-        attack: 0.245,
-        decay: 0.131,
-        sustain: 0.5,
-        release: 2,
-        baseFrequency: 20,
-        octaves: 7.2,
-        exponent: 2,
-      },
-    });
-    this.synth.volume.value = 10;
-
-    //this.synth.send('reverb', -12);
-  }
-}
-
-export class Mono_Pizz extends Instrument {
-  constructor() {
-    super(new Tone.PolySynth(Tone.MonoSynth), 10, true);
-    this.synth.set({
-      oscillator: {
-        type: "sawtooth",
-      },
-      filter: {
-        Q: 3,
-        type: "highpass",
-        rolloff: -12,
-      },
-      envelope: {
-        attack: 0.01,
-        decay: 0.3,
-        sustain: 0,
-        release: 0.9,
-      },
-      filterEnvelope: {
-        attack: 0.01,
-        decay: 0.1,
-        sustain: 0,
-        release: 0.1,
-        baseFrequency: 800,
-        octaves: -1.2,
-      },
-    });
-
-    //this.synth.send('reverb', -12);
   }
 }
 
@@ -329,7 +263,7 @@ export class AlienChorus extends Instrument {
 
 export class DelicateWindPart extends Instrument {
   constructor() {
-    super(new Tone.PolySynth(Tone.Synth), 24, true);
+    super(new Tone.PolySynth(Tone.Synth), 20);
     this.synth.set({
       portamento: 0.0,
       oscillator: {
@@ -342,9 +276,8 @@ export class DelicateWindPart extends Instrument {
         release: 2,
       },
     });
-    this.synth.volume.value = 10;
-
-    //this.synth.send('reverb', -12);
+    const comp = new Tone.Compressor(-20,3).toDestination();
+    this.synth.chain(comp);
   }
 }
 

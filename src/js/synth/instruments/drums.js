@@ -2,7 +2,7 @@ import Instrument from './instrument';
 
 export class KickDrum extends Instrument {
   constructor() {
-    super(new Tone.MembraneSynth({ pitchDecay: 0.1 }), 14, true);
+    super(new Tone.MembraneSynth({ pitchDecay: 0.1 }), 18, true);
   }
 }
 export class HiHat extends Instrument {
@@ -32,9 +32,6 @@ export class Slap extends Instrument {
       5,
       true
     );
-
-   // const filter = new Tone.Filter(500, 'lowpass').toDestination();
-    //this.synth.connect(filter);
   }
 }
 
@@ -79,7 +76,7 @@ export class DampenedOpenHat extends Instrument {
     super(
       new Tone.MetalSynth({
         frequency,
-        // harmonicity: 5.1,
+        harmonicity: 5.1,
         modulationIndex: 32,
         resonance: 1000,
         octaves: 1.5,
@@ -87,5 +84,8 @@ export class DampenedOpenHat extends Instrument {
       0,
       true
     );
+  }
+  setFrequency(frequency) {
+    this.synth.set({frequency})
   }
 }
