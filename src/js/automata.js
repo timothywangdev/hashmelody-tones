@@ -1,5 +1,5 @@
 class Automata {
-  constructor(size = 50, k = 3, r = 1, random) {
+  constructor(size = 50, timestamps=50, k = 3, r = 1, random) {
     const ruleString = [];
     for (let i = 0; i < (r + 2) * (k - 1) + 1; i += 1) {
       // 20% prob empty
@@ -11,7 +11,7 @@ class Automata {
     }
     this.config = {
       size,
-      timestamps: size,
+      timestamps,
       k,
       r,
       ruleString,
@@ -88,7 +88,7 @@ class Automata {
   }
 
   getCell(idx) {
-    if (idx < 0 || idx >= this.config.size * this.config.size) return null;
+    if (idx < 0 || idx >= this.config.size * this.config.timestamps) return null;
     return this.grid[Math.floor(idx / this.config.size)][
       idx % this.config.size
     ];

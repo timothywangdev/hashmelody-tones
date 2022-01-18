@@ -1,4 +1,4 @@
-import { Instrument } from './instrument';
+import Instrument from './instrument';
 
 export const subBass = () => squareBass(2);
 
@@ -18,7 +18,7 @@ export class FastAttackSquare extends Instrument {
           release: 1,
         },
       }),
-      0,
+      5,
       true
     );
   }

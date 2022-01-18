@@ -1,20 +1,21 @@
-import { Instrument } from './instrument';
+import Instrument from './instrument';
 
 export class KickDrum extends Instrument {
   constructor() {
-    super(new Tone.MembraneSynth({ pitchDecay: 0.1 }), 10, true);
+    super(new Tone.MembraneSynth({ pitchDecay: 0.1 }), 14, true);
   }
 }
 export class HiHat extends Instrument {
   constructor() {
-    super(new Tone.NoiseSynth(), 16);
+    super(new Tone.MetalSynth(), 14, true);
     const filter = new Tone.Filter(8000, 'highpass').toDestination();
-    this.synth.connect(filter);
+    const freeverb = new Tone.Freeverb()
+    this.synth.chain(filter);
   }
 }
 
 export class Slap extends Instrument {
-  constructor(addReverb) {
+  constructor() {
     super(
       new Tone.NoiseSynth({
         noise: {
@@ -28,11 +29,12 @@ export class Slap extends Instrument {
           release: 0.3,
         },
       }),
-      0
+      5,
+      true
     );
 
-    const filter = new Tone.Filter(500, 'lowpass').toDestination();
-    this.synth.connect(filter);
+   // const filter = new Tone.Filter(500, 'lowpass').toDestination();
+    //this.synth.connect(filter);
   }
 }
 
@@ -42,7 +44,7 @@ export class OpenHat extends Instrument {
       new Tone.MetalSynth({
         frequency,
       }),
-      0,
+      10,
       true
     );
   }
@@ -61,7 +63,7 @@ export class Shaker extends Instrument {
           release: 0.3,
         },
         frequency,
-        // harmonicity: 5.1,
+        harmonicity: 5.1,
         modulationIndex: 64,
         resonance: 3000,
         octaves: 1.5,

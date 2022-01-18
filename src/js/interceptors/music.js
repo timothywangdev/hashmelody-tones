@@ -12,7 +12,6 @@ class Music {
     };
     this.song = new Song()
     this.visCallback = idx => {
-      //console.log(idx)
       this.renderer.setActiveNode(idx)
       if (idx >= this.automata.config.timestamps * this.automata.config.size - 1) {
         // after last one, stop
@@ -27,6 +26,7 @@ class Music {
   async play() {
     try {
     console.log('play')
+    await Tone.start();
     Tone.Transport.bpm.value = this.generatedSettings.bpm;
     Tone.Transport.swing = this.generatedSettings.swing;
 

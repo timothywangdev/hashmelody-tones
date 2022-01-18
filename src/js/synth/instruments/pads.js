@@ -1,5 +1,5 @@
 import * as bass from './bass';
-import { Instrument } from './instrument';
+import Instrument from './instrument';
 
 export class SimpleSine extends Instrument {
   constructor() {
@@ -61,24 +61,19 @@ export const SwirlySawtoothChorusWithSubBass = function() {
   });
   const filter = new Tone.Filter(250, "lowpass").toMaster();
 
-  const lfo = new Tone.LFO("8m", 250, 1600);
+  const lfo = new Tone.LFO("8m", 550, 1500);
   lfo.start();
   lfo.connect(filter.frequency);
 
-  const chorus = new Tone.Chorus("1:0:0", 2.5, 1).toMaster();
-  const reverb = new Tone.Freeverb().toMaster();
-
-  const lfoReverbDampening = new Tone.LFO("8m", 400, 14000);
-  lfoReverbDampening.phase = 90;
-  lfoReverbDampening.start();
-  //lfoReverbDampening.connect(reverb.dampening);
+  const chorus = new Tone.Chorus("1:0:0", 2.5, 1);
+  const reverb = new Tone.Freeverb();
 
   chordSynth.chain(chorus, reverb, filter);
 
   //Add bass for the root note
   const bassSynth = bass.subBass();
   bassSynth.volume.value = bassSynth.volume.value - 22;
-  chordSynth.volume.value = -10;
+  chordSynth.volume.value = 0;
   this.triggerAttackRelease = (chord, duration, time) => {
     const lowRootNote = Tone.Frequency(chord[0]).transpose(-12);
     chordSynth.triggerAttackRelease(chord, duration, time);

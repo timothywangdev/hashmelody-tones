@@ -34,7 +34,7 @@ class Song {
       KickDrum: new instruments.drums.KickDrum(),
       Slap: new instruments.drums.Slap(),
       HiHat: new instruments.drums.HiHat(),
-      Shaker: new instruments.drums.Shaker(),
+      Shaker: new instruments.drums.Shaker(Tone.Frequency('C5').toFrequency()),
       OpenHat: new instruments.drums.OpenHat(Tone.Frequency('C5').toFrequency())
     }
   }
@@ -85,6 +85,12 @@ class Song {
       songKey
     );
 
+    const notesPerChord = [];
+    for (const bassLinePattern of bassLinePatterns) {
+      notesPerChord.push(bassLinePattern.filter((hit) => hit === 1).length);
+    }
+    const bassOctave = songKey.chordOctave - 1;
+
     const chordInstrument = utils.randomFromArray(this.possibleChordPads);
     const bassInstrument = utils.randomFromArray(
       this.possibleBassInstruments
@@ -111,6 +117,7 @@ class Song {
       motifInstrument: motifInstrument,
       mainMelodyInstrument: mainMelodyInstrument,
       mainMelodyPatterns,
+      bassLinePatterns,
       kickRythym,
       hihatRythym,
       shakerRythym,
@@ -178,12 +185,7 @@ class Song {
       "0:0:0", chordProgression, chordInstrument, `${chordProgressionBars}m`, `${chordProgressionBars}m`, true
     )
 
-    const notesPerChord = [];
-    for (const bassLinePattern of bassLinePatterns) {
-      notesPerChord.push(bassLinePattern.filter((hit) => hit === 1).length);
-    }
-    const bassOctave = songKey.chordOctave - 1;
-
+  
     parts.addRepeatingSoloPart(
       "0:0:0",
       scales.smoothBassLineForChordProgression(

@@ -15,7 +15,7 @@ let tokenData = {
 var random = new Random(tokenData.hash);
 window.random = random
 
-let automata = new Automata(16, 8, 1, random);
+let automata = new Automata(16, 12, 8, 1, random);
 automata.generate();
 
 const W = window;

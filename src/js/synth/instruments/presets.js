@@ -1,5 +1,5 @@
 // http://tonejs.github.io/Presets/
-import { Instrument } from "./instrument";
+import Instrument from "./instrument";
 
 export class Tiny extends Instrument {
   constructor() {
@@ -165,9 +165,11 @@ export class BassGuitar extends Instrument {
           octaves: 4.4,
         },
       }),
-      5,
-      true
+      2,
+      //true
     );
+    const freeverb = new Tone.Freeverb().toDestination()
+    this.synth.connect(freeverb)
   }
 }
 
@@ -360,7 +362,7 @@ export class TreeTrunk extends Instrument {
         release: 1.2,
       },
     });
-    this.synth.volume.value = 10;
+    //this.synth.volume.value = 10;
 
     //this.synth.send('reverb', -12);
   }

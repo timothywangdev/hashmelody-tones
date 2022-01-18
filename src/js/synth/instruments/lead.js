@@ -1,4 +1,4 @@
-import { Instrument } from './instrument';
+import Instrument from './instrument';
 
 export class SimpleSine extends Instrument {
   constructor() {

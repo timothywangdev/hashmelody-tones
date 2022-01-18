@@ -1,4 +1,4 @@
-export class Instrument {
+class Instrument {
   constructor(synth, volume, connect = false) {
     this.synth = synth;
     //this.synth.connect(Tone.getDestination())
@@ -18,4 +18,6 @@ export class Instrument {
       console.log(err);
     }
   }
-}
+};
+
+export default Instrument;
