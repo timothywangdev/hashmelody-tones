@@ -159,8 +159,12 @@ class Renderer {
       width,
       height
     );
+    const ratio = window.devicePixelRatio
 
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
+    // refer to
+    // https://stackoverflow.com/questions/15661339/how-do-i-fix-blurry-text-in-my-html5-canvas
+    this.context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    
     this.context.clearRect(0, 0, width, height);
 
     // set background

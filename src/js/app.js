@@ -29,7 +29,7 @@ let width; let height; let
   pixelRatio;
 
 // setup gui
-const gui = new dat.GUI({ autoPlace: true, width: 300 });
+const gui = new dat.GUI({ autoPlace: true, width: 300, height: 500 });
 
 let id;
 const draw = () => {
@@ -45,7 +45,7 @@ const props = {
   },
   hash: tokenData.hash,
 };
-// gui.add(props, 'hash').name('Token ID').listen();
+//gui.add(props, 'hash').name('Token ID').listen();
 gui.add(props, 'resetAnimation')
   .name('Randomize Hash');
 
@@ -59,7 +59,6 @@ const resize = () => {
   canvas.height = ~~(height * pixelRatio);
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-
   context.save();
   context.scale(pixelRatio, pixelRatio);
   context.restore();
