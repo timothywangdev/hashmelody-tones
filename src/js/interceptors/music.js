@@ -13,8 +13,7 @@ class Music {
     this.song = new Song()
     this.visCallback = idx => {
       this.renderer.setActiveNode(idx)
-      console.log(idx)
-      if (idx >= this.automata.config.timestamps * this.automata.config.size - 1) {
+      if (idx >= this.automata.lastBeginIdx) {
         // after last one, stop
         this.stop()
       }

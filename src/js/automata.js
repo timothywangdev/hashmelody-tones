@@ -1,3 +1,5 @@
+import lerp from "./lerp";
+
 class Automata {
   constructor(size = 50, timestamps=50, k = 3, r = 1, random) {
     const ruleString = [];
@@ -28,47 +30,47 @@ class Automata {
   }
 
   generate() {
-    this.grid = [
-      Array(this.config.size)
-        .fill(0)
-        .map(() => {
-          return {
-            val: this.config.random.random_int(0, this.config.k - 1),
-            len: 1,
-            begin: false
-          };
-        }),
-    ];
+    this.grid = [];
 
     for (let t = 0; t < this.config.timestamps; t += 1) {
       const nextRow = [];
       for (let i = 0; i < this.config.size; i += 1) {
         const neighbourhood = [];
-        for (let j = i - this.config.r; j <= i + this.config.r; j += 1) {
-          neighbourhood.push(
-            j >= 0 && j < this.config.size
-              ? this.grid[this.grid.length - 1][j].val
-              : 0
-          );
+        if (t>0) {
+          for (let j = i - this.config.r; j <= i + this.config.r; j += 1) {
+            neighbourhood.push(
+              j >= 0 && j < this.config.size
+                ? this.grid[this.grid.length - 1][j].val
+                : 0
+            );
+          }
         }
+        const multiplier = this.config.random.random_int(0, 5)
+        let randomVal =  (2 + Math.sin(multiplier * i) + Math.sin(Math.PI * i)) / 4.0
+        randomVal = Math.min(Math.floor(lerp(0, this.config.k, randomVal)), this.config.k-1)
         nextRow.push({
-          val: Automata.totalisticRule(
+          val: neighbourhood.length > 0 ? Automata.totalisticRule(
             neighbourhood,
             this.config.k,
             this.config.ruleString
-          ),
+          ): randomVal,
           len: 1,
           begin: false,
+          idx: t * this.config.size + i
         });
       }
       this.grid.push(nextRow);
     }
 
+    this.lastBeginIdx = 0;
     const generateSegments = (row, start, end, isLastRow) => {
       let consecutiveVal = 0;
       for (let i = end; i >= start; i--) {
         if (i + 1 <= end && row[i].val !== row[i + 1].val) {
           row[i + 1].begin = true;
+          if (row[i+1].val > 0) {
+            this.lastBeginIdx = Math.max(this.lastBeginIdx, row[i + 1].idx);
+          }
           consecutiveVal = 1;
         } else {
           consecutiveVal += 1;
@@ -76,6 +78,9 @@ class Automata {
         row[i].len = consecutiveVal;
       }
       row[start].begin = true;
+      if (row[start].val > 0) {
+        this.lastBeginIdx = Math.max(this.lastBeginIdx, row[start].idx);
+      }
     }
 
     for (let t = 0; t < this.config.timestamps; t += 1) {
@@ -83,8 +88,8 @@ class Automata {
         generateSegments(this.grid[t], i, Math.min(i+this.config.chunkSize, this.config.size-1))
       }
     }
-    console.log(this.grid)
-    //this.grid = this.grid.slice(1);
+    console.log(this)
+    
   }
 
   getCell(idx) {
