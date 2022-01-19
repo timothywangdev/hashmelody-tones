@@ -19,30 +19,31 @@ class Renderer {
     this.random = random;
     this.activeNoteIdx = null;
 
-    const palettesNames = [
-      "retro",
-      "retro-washedout",
-      "roygbiv-warm",
-      "roygbiv-toned",
-      "present-correct",
-      "tundra3",
-      "kov_06",
-      "kov_06b",
-      "empusa",
-      "delphi",
-      "mably",
-      "nowak",
-      "jupiter",
-      "hersche",
-      "cherfi",
-      "harvest",
-      "honey",
-      "jungle",
-      "giftcard",
-      "giftcard_sub",
-      "dale_paddle",
-      "exposito",
-    ];
+    // const palettesNames = [
+    //   "retro",
+    //   "retro-washedout",
+    //   "roygbiv-warm",
+    //   "roygbiv-toned",
+    //   "present-correct",
+    //   "tundra3",
+    //   "kov_06",
+    //   "kov_06b",
+    //   "empusa",
+    //   "delphi",
+    //   "mably",
+    //   "nowak",
+    //   "jupiter",
+    //   "hersche",
+    //   "cherfi",
+    //   "harvest",
+    //   "honey",
+    //   "jungle",
+    //   "giftcard",
+    //   "giftcard_sub",
+    //   "dale_paddle",
+    //   "exposito",
+    // ];
+    const palettesNames = tome.getAll().filter(item => !!item.background && item.size >= 5).map(item => item.name)
     const idx = this.random.random_int(0, palettesNames.length-1);
     this.palette = tome.get(palettesNames[idx]);
     console.log(this.palette, this.palette.background)
@@ -164,7 +165,7 @@ class Renderer {
     // refer to
     // https://stackoverflow.com/questions/15661339/how-do-i-fix-blurry-text-in-my-html5-canvas
     this.context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    
+
     this.context.clearRect(0, 0, width, height);
 
     // set background
