@@ -39,9 +39,10 @@ class Music {
   }
 
   async stop() {
-    await Tone.getContext().close();
-    this.state.playing = false;
-    
+    window.setTimeout(async () => {
+      await Tone.getContext().close();
+      this.state.playing = false;
+    }, 1000)
   }
 
   togglePlay() {
