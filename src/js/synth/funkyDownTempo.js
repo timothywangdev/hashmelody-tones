@@ -10,32 +10,32 @@ class Song {
 
     // setup instruments
     this.possibleChordPads = [
-      new instruments.pads.SimpleSine(),
-      new instruments.pads.SwirlySawtoothChorusWithSubBass(),
-      new instruments.presets.DelicateWindPart(),
-      new instruments.presets.TreeTrunk(),
+      instruments.pads.SimpleSine,
+      instruments.pads.SwirlySawtoothChorusWithSubBass,
+      instruments.presets.DelicateWindPart,
+      instruments.presets.TreeTrunk,
     ];
     this.possibleBassInstruments = [
-      new instruments.bass.FastAttackSquare(),
-      new instruments.presets.Bassy(),
+      instruments.bass.FastAttackSquare,
+      instruments.presets.Bassy,
     ];
     this.possibleMotifInstruments = [
-      new instruments.presets.AM_Tiny(),
-      new instruments.presets.Kalimba(),
+      instruments.presets.AM_Tiny,
+      instruments.presets.Kalimba,
       //new instruments.presets.Harmonics(),
-      new instruments.presets.FM_ElectricCello(),
-      new instruments.presets.BassGuitar(),
-      new instruments.presets.Bah(),
+      instruments.presets.FM_ElectricCello,
+      instruments.presets.BassGuitar,
+      instruments.presets.Bah,
       //new instruments.presets.Coolguy(),
       //new instruments.presets.Mono_Pizz(),
       //new instruments.presets.DelicateWindPart(),
     ];
     this.drumInstruments = {
-      KickDrum: new instruments.drums.KickDrum(),
-      Slap: new instruments.drums.Slap(),
-      HiHat: new instruments.drums.HiHat(),
-      Shaker: new instruments.drums.Shaker(Tone.Frequency('C5').toFrequency()),
-      OpenHat: new instruments.drums.OpenHat(Tone.Frequency('C5').toFrequency())
+      KickDrum: instruments.drums.KickDrum,
+      Slap: instruments.drums.Slap,
+      HiHat: instruments.drums.HiHat,
+      Shaker: instruments.drums.Shaker,
+      OpenHat: instruments.drums.OpenHat
     }
   }
 
@@ -91,23 +91,23 @@ class Song {
     }
     const bassOctave = songKey.chordOctave - 1;
 
-    const chordInstrument = utils.randomFromArray(this.possibleChordPads);
-    const bassInstrument = utils.randomFromArray(
+    const chordInstrument = new (utils.randomFromArray(this.possibleChordPads))();
+    const bassInstrument = new (utils.randomFromArray(
       this.possibleBassInstruments
-    );
-    const motifInstrument = utils.randomFromArray(
+    ))();
+    const motifInstrument = new (utils.randomFromArray(
       this.possibleMotifInstruments
-    );
-    const mainMelodyInstrument = utils.randomFromArray(
+    ))();
+    const mainMelodyInstrument = new (utils.randomFromArray(
       this.possibleMotifInstruments
-    );
-    const openHatFrequency = Tone.Frequency(songKey.root + "3").toFrequency();
+    ))();
+    //const openHatFrequency = Tone.Frequency(songKey.root + "3").toFrequency();
     const generatedSettings = {
       bpm: utils.randomIntBetween(70, 90),
       swing: window.random.random_num(0, 1),
       key: `${songKey.root} (${songKey.typeName})`,
       chordOctave: songKey.chordOctave,
-      chordProgression: progressionIntervals,
+      chordProgression,
       chordProgressionBars,
       chordTypesToUseInProgression,
       chordProgressionNotes:
@@ -138,7 +138,7 @@ class Song {
     parts.addDrums(
       "0:0:0",
       `${songKey.root}0`,
-      this.drumInstruments.KickDrum,
+      new this.drumInstruments.KickDrum(),
       kickRythym,
       1,
       true
@@ -147,7 +147,7 @@ class Song {
     parts.addDrums(
       "0:0:0",
       undefined,
-      this.drumInstruments.Slap,
+      new this.drumInstruments.Slap(),
       snareRythym,
       1.0,
       true
@@ -162,14 +162,14 @@ class Song {
   //     true
   //   );
 
-    parts.addDrums(
-      "0:0:0",
-      undefined,
-      this.drumInstruments.Shaker,
-      shakerRythym,
-      0.8,
-      true
-    );
+    // parts.addDrums(
+    //   "0:0:0",
+    //   undefined,
+    //   new this.drumInstruments.Shaker(),
+    //   shakerRythym,
+    //   0.8,
+    //   true
+    // );
 
     // this.drumInstruments.OpenHat.setFrequency(Tone.Frequency(songKey.root + "3").toFrequency())
     // parts.addDrums(

@@ -46,7 +46,6 @@ export const actualNotesFromScale = (tonic, scale, lowOctave, highOctave) => {
       .toNote()
       .replace(/[0-9]/g, '');
   }
-
   for (let octave = lowOctave; octave <= highOctave; octave++) {
     const octaveScale = scaleFromTonic(tonic + octave, scale);
     notes = [...notes, ...octaveScale];
@@ -82,7 +81,6 @@ export const getRandomChordTypesForProgression = (progressionRootNotes) => {
 
 export const chordFromScale = (chordToneIndexes, tonic, scale, mainOctave, indexOffset = 0) => {
   const fullScale = actualNotesFromScale(tonic, scale, mainOctave, mainOctave + 1);
-
   const filteredScale = [];
   for (const index of chordToneIndexes) {
     filteredScale.push(fullScale[index + indexOffset - 1]);
@@ -98,7 +96,7 @@ export const scaleFromTonic = (tonic, intervals) => {
 
   for (const interval of intervals) {
     note = note.transpose(interval);
-    scale.push(note.toFrequency());
+    scale.push(note.toNote());
   }
 
   return scale;

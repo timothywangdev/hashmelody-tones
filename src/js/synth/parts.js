@@ -33,7 +33,7 @@ export const addDrums = (startTime, note, instrument, pattern, probability, shou
 export const addSoloPart = (startTime, instrument, pattern, visCallback) => {
   const sequencer = new Tone.Sequence(
     ((time, {idx, begin, val, note, duration}) => {
-      if (val > 0 && begin) {
+      if (val > 0 && note && begin) {
         instrument.triggerAttackRelease(note, duration, time);
       }
       Tone.Draw.schedule(() => {

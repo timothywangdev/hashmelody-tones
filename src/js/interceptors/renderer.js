@@ -26,7 +26,6 @@ class Renderer {
       "roygbiv-toned",
       "present-correct",
       "tundra3",
-      "tundra4",
       "kov_06",
       "kov_06b",
       "empusa",
@@ -46,6 +45,7 @@ class Renderer {
     ];
     const idx = this.random.random_int(0, palettesNames.length-1);
     this.palette = tome.get(palettesNames[idx]);
+    console.log(this.palette, this.palette.background)
     this.paletteColors = this.palette.colors;
     this.strokeColor = this.palette.stroke;
 
@@ -152,7 +152,8 @@ class Renderer {
       BASE_RADIUS,
     };
   }
-
+  // render(width, height) {
+  // }
   render(width, height) {
     const { CELL_SIZE_HEIGHT, M, DIM, scale, BASE_RADIUS } = this.getScaleParam(
       width,
