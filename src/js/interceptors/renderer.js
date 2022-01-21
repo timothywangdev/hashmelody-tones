@@ -43,7 +43,12 @@ class Renderer {
     //   "dale_paddle",
     //   "exposito",
     // ];
-    const palettesNames = tome.getAll().filter(item => !!item.background && item.size >= 5).map(item => item.name)
+    const palettesBlackList = [
+      'kov_06b',
+      'skyspider',
+      'tsu_arcade',
+    ]
+    const palettesNames = tome.getAll().filter(item => !!item.background && item.size >= 5 && !palettesBlackList.includes(item.name)).map(item => item.name)
     const idx = this.random.random_int(0, palettesNames.length-1);
     this.palette = tome.get(palettesNames[idx]);
     console.log(this.palette, this.palette.background)

@@ -12,20 +12,24 @@ class Song {
     this.possibleChordPads = [
       instruments.pads.SimpleSine,
       instruments.pads.SwirlySawtoothChorusWithSubBass,
-      instruments.presets.DelicateWindPart,
+      //instruments.presets.DelicateWindPart,
       instruments.presets.TreeTrunk,
     ];
     this.possibleBassInstruments = [
       instruments.bass.FastAttackSquare,
       instruments.presets.Bassy,
+      instruments.presets.BassGuitar,
     ];
     this.possibleMotifInstruments = [
       instruments.presets.AM_Tiny,
       instruments.presets.Kalimba,
       //new instruments.presets.Harmonics(),
       instruments.presets.FM_ElectricCello,
-      instruments.presets.BassGuitar,
+      //instruments.presets.BassGuitar,
       instruments.presets.Bah,
+      instruments.presets.Marimba,
+      instruments.presets.Piano,
+      instruments.presets.SteelPan,
       //new instruments.presets.Coolguy(),
       //new instruments.presets.Mono_Pizz(),
       //new instruments.presets.DelicateWindPart(),

@@ -45,9 +45,12 @@ class Automata {
             );
           }
         }
-        const multiplier = this.config.random.random_int(0, 5)
-        let randomVal =  (2 + Math.sin(multiplier * i) + Math.sin(Math.PI * i)) / 4.0
+        const shift = this.config.random.random_int(0, 5)
+        let randomVal =  (2 + Math.sin(2 * (i+shift)) + Math.sin(Math.PI * (i+shift))) / 4.0
         randomVal = Math.min(Math.floor(lerp(0, this.config.k, randomVal)), this.config.k-1)
+        if (this.config.random.random_bool(0.3)) {
+          randomVal = 0;
+        }
         nextRow.push({
           val: neighbourhood.length > 0 ? Automata.totalisticRule(
             neighbourhood,

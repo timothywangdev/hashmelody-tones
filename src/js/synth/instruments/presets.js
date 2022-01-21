@@ -36,7 +36,6 @@ export class Tiny extends Instrument {
   }
 }
 
-
 export class AM_Tiny extends Instrument {
   constructor() {
     super(new Tone.PolySynth(Tone.AMSynth), 24, true);
@@ -74,7 +73,7 @@ export class AM_Tiny extends Instrument {
 
 export class FM_ElectricCello extends Instrument {
   constructor() {
-    super(new Tone.PolySynth(Tone.FMSynth), 10);
+    super(new Tone.PolySynth(Tone.FMSynth), 14);
     this.synth.set({
       harmonicity: 3.01,
       modulationIndex: 14,
@@ -102,7 +101,6 @@ export class FM_ElectricCello extends Instrument {
   }
 }
 
-
 export class Kalimba extends Instrument {
   constructor() {
     super(
@@ -128,7 +126,7 @@ export class Kalimba extends Instrument {
           release: 0.2,
         },
       }),
-      10,
+      10
     );
     const reverb = new Tone.Freeverb().toDestination();
     this.synth.chain(reverb);
@@ -165,10 +163,10 @@ export class BassGuitar extends Instrument {
           octaves: 4.4,
         },
       }),
-      2,
+      2
     );
-    const freeverb = new Tone.Freeverb().toDestination()
-    this.synth.connect(freeverb)
+    const freeverb = new Tone.Freeverb().toDestination();
+    this.synth.connect(freeverb);
   }
 }
 
@@ -276,7 +274,7 @@ export class DelicateWindPart extends Instrument {
         release: 2,
       },
     });
-    const comp = new Tone.Compressor(-20,3).toDestination();
+    const comp = new Tone.Compressor(-20, 3).toDestination();
     this.synth.chain(comp);
   }
 }
@@ -303,7 +301,7 @@ export class TreeTrunk extends Instrument {
 
 export class Marimba extends Instrument {
   constructor() {
-    super(new Tone.PolySynth(Tone.Synth), 24, true);
+    super(new Tone.PolySynth(Tone.Synth), 14, true);
     this.synth.set({
       oscillator: {
         partials: [1, 0, 2, 0, 3],
@@ -315,9 +313,6 @@ export class Marimba extends Instrument {
         release: 1.2,
       },
     });
-    this.synth.volume.value = 10;
-
-    //this.synth.send('reverb', -12);
   }
 }
 
@@ -339,5 +334,44 @@ export class Gravel extends Instrument {
     this.synth.volume.value = 10;
 
     //this.synth.send('reverb', -12);
+  }
+}
+
+export class Piano extends Instrument {
+  constructor() {
+    super(
+      new Tone.PolySynth(Tone.Synth, {
+        volume: 1,
+        oscillator: {
+          partials: [1, 2, 1],
+        },
+        portamento: 0.05,
+      }),
+      20,
+      true
+    );
+  }
+}
+
+export class SteelPan extends Instrument {
+  constructor() {
+    super(
+      new Tone.PolySynth(Tone.Synth, {
+        oscillator: {
+          type: "fatcustom",
+          partials: [0.2, 1, 0, 0.5, 0.1],
+          spread: 40,
+          count: 3,
+        },
+        envelope: {
+          attack: 0.001,
+          decay: 1.6,
+          sustain: 0,
+          release: 1.6,
+        },
+      }),
+      14,
+      true
+    );
   }
 }
