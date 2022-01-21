@@ -29,7 +29,7 @@ let width; let height; let
   pixelRatio;
 
 // setup gui
-const gui = new dat.GUI({ autoPlace: true, width: 300, height: 500 });
+const gui = new dat.GUI({ autoPlace: true, width: 400 });
 
 let id;
 const draw = () => {
@@ -38,17 +38,39 @@ const draw = () => {
   id = requestAnimationFrame(draw);
 };
 
+const getSongSetteings = settings => {
+  return {
+    key: settings.key,
+    bpm: settings.bpm,
+    chordOctave: settings.chordOctave,
+    chordProgressionBars: settings.chordProgressionBars,
+    chordProgressionNotes: settings.chordProgressionNotes,
+    chordInstrument: settings.chordInstrument,
+    bassInstrument: settings.bassInstrument,
+    mainMelodyInstrument: settings.mainMelodyInstrument
+  }
+}
+
 const props = {
   resetAnimation: async () => {
     const genRanHex = (size) => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     window.location.search = `hash=${genRanHex(64)}`;
   },
   hash: tokenData.hash,
+  ...getSongSetteings(music.generatedSettings)
 };
-//gui.add(props, 'hash').name('Token ID').listen();
+
 gui.add(props, 'resetAnimation')
   .name('Randomize Hash');
-
+gui.add(props, 'hash').name('Token ID').listen();
+gui.add(props, 'key').name('Key');
+gui.add(props, 'bpm').name('BPM');
+gui.add(props, 'chordOctave').name('Chord Octave');
+gui.add(props, 'chordProgressionBars').name('Chord Progression Bars');
+gui.add(props, 'chordProgressionNotes').name('Chord Progression');
+gui.add(props, 'mainMelodyInstrument').name('Main Melody Instrument');
+gui.add(props, 'bassInstrument').name('Bass Instrument');
+gui.add(props, 'chordInstrument').name('Chord Instrument');
 gui.show();
 
 const resize = () => {
