@@ -44,7 +44,7 @@ export const addSoloPart = (startTime, instrument, pattern, visCallback) => {
     pattern,
     '8n',
   );
-  sequencer.loop = false;
+  sequencer.loop = true;
   sequencer.start(startTime);
   return sequencer;
 };

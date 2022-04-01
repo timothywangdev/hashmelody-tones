@@ -18,7 +18,7 @@ class Song {
     this.possibleBassInstruments = [
       instruments.bass.FastAttackSquare,
       instruments.presets.Bassy,
-      instruments.presets.BassGuitar,
+      //instruments.presets.BassGuitar,
     ];
     this.possibleMotifInstruments = [
       instruments.presets.AM_Tiny,

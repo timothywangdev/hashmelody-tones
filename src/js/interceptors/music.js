@@ -13,10 +13,10 @@ class Music {
     this.song = new Song()
     this.visCallback = idx => {
       this.renderer.setActiveNode(idx)
-      if (idx >= this.automata.lastBeginIdx) {
-        // after last one, stop
-        this.stop()
-      }
+      // if (idx >= this.automata.lastBeginIdx) {
+      //   // after last one, stop
+      //   this.stop()
+      // }
     }
     this.generatedSettings = this.song.generate(this.automata, this.visCallback)
     console.log('setting generated')

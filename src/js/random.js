@@ -54,6 +54,18 @@ class Random {
   random_choice(list) {
     return list[this.random_int(0, list.length - 1)];
   }
+
+  random_choice_weighted(list, probList) {
+    const target = this.random_dec()
+    let cumSum = 0;
+    for(const [i, _prob] of probList.entries()) {
+      cumSum += _prob;
+      if (cumSum >= target) {
+        return list[i];
+      }
+    }
+    return list[list.length-1];
+  }
 }
 
 export default Random;

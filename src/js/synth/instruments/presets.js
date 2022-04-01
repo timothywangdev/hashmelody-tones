@@ -126,7 +126,7 @@ export class Kalimba extends Instrument {
           release: 0.2,
         },
       }),
-      10
+      14
     );
     const reverb = new Tone.Freeverb().toDestination();
     this.synth.chain(reverb);

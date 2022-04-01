@@ -9,11 +9,12 @@ if (tmp.length == 2) {
   hashParam = tmp[1]
 }
 let tokenData = {
-  hash: hashParam || '0x95c138f8b54949c12d05105cfc01960fc496813cbc3495b277aeed748549631',
+  hash: hashParam || '9d407d7c8df75e1b49433374b2c6f1557f986ce30f5619a23c50fb031921b55e',
 };
 
 var random = new Random(tokenData.hash);
 window.random = random
+window.tokenData = tokenData
 
 let automata = new Automata(16, 12, 8, 1, random);
 automata.generate();
@@ -29,11 +30,12 @@ let width; let height; let
   pixelRatio;
 
 // setup gui
+
 const gui = new dat.GUI({ autoPlace: true, width: 400 });
 
 let id;
-const draw = () => {
-  renderer.render(width, height);
+const draw = (timestamp) => {
+  renderer.render(width, height, timestamp);
   gui.updateDisplay();
   id = requestAnimationFrame(draw);
 };
@@ -47,7 +49,9 @@ const getSongSetteings = settings => {
     chordProgressionNotes: settings.chordProgressionNotes,
     chordInstrument: settings.chordInstrument,
     bassInstrument: settings.bassInstrument,
-    mainMelodyInstrument: settings.mainMelodyInstrument
+    mainMelodyInstrument: settings.mainMelodyInstrument,
+    palettes: settings.palettes,
+    style: settings.style
   }
 }
 
@@ -57,7 +61,7 @@ const props = {
     window.location.search = `hash=${genRanHex(64)}`;
   },
   hash: tokenData.hash,
-  ...getSongSetteings(music.generatedSettings)
+  ...getSongSetteings({...music.generatedSettings, ...renderer.generatedSettings})
 };
 
 gui.add(props, 'resetAnimation')
@@ -71,6 +75,9 @@ gui.add(props, 'chordProgressionNotes').name('Chord Progression');
 gui.add(props, 'mainMelodyInstrument').name('Main Melody Instrument');
 gui.add(props, 'bassInstrument').name('Bass Instrument');
 gui.add(props, 'chordInstrument').name('Chord Instrument');
+
+gui.add(props, 'palettes').name('Color Palettes');
+gui.add(props, 'style').name('Art Style');
 gui.show();
 
 const resize = () => {

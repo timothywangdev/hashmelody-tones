@@ -180,7 +180,7 @@ export const melodyForChordProgression = (automata, chordProgressionBars, chordP
 
     const melodyOctave = key.chordOctave + 1;
     const transposeSemiTones = melodyOctave - key.chordOctave * 12;
-
+    console.log(Tone.Time('8n').toSeconds())
     for(let i = 0; i < automata.config.size * automata.config.timestamps; i+=1) {
       const chunkIdx = Math.floor(i / (8 * chordProgressionBars))
       const chord = chordProgression[chunkIdx % chordProgression.length]

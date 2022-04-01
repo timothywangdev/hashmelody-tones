@@ -44,6 +44,12 @@ class Music {
     };
 
     const chunks = sliceIntoChunks(mainMelodySequence, 8);
+    
+    
+    
+
+
+
 
     // generate final sequence
     mainMelodySequence = [];
